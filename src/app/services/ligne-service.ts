@@ -1,4 +1,4 @@
-import { Service,  } from '@angular/core';
+import { Service, signal } from '@angular/core';
 import { Ligne } from '../models/ligne';
 
 @Service()
@@ -40,6 +40,7 @@ export class LigneService {
       planifies: 2
     }
   ];
+
   getLignes(): Ligne[] {
     return [...this.lignes];
   }

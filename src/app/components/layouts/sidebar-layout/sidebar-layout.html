@@ -1,0 +1,43 @@
+
+<div class="app-layout">
+  <aside class="sidebar">
+    <div class="brand">louage</div>
+
+    <nav class="navigation">
+      <a
+        routerLink="/lignes"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page">
+        <span class="nav-icon">↔</span>
+        <span>Lignes de transport</span>
+      </a>
+
+      <a
+        routerLink="/louagistes"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page">
+        <span class="nav-icon">♙</span>
+        <span>Louagistes</span>
+      </a>
+
+      <a
+        routerLink="/plannings"
+        routerLinkActive="active"
+        ariaCurrentWhenActive="page">
+        <span class="nav-icon">▦</span>
+        <span>Plannings</span>
+      </a>
+    </nav>
+  </aside>
+
+  <main class="main-content">
+    <header class="topbar">
+      <span>Administration</span>
+    </header>
+
+    <section class="page-content">
+      <router-outlet></router-outlet>
+    </section>
+  </main>
+</div>
+
