@@ -1,72 +1,27 @@
-import { Service, signal } from '@angular/core';
+import { inject, Service, signal } from '@angular/core';
 import { Ligne } from '../models/ligne';
+import { HttpClient } from '@angular/common/http';
+import { Observable } from 'rxjs';
+import { Station } from '../models/station';
+import { LigneRequest } from '../models/ligne-request';
 
 @Service()
 export class LigneService {
-      private lignes: Ligne[] = [
-    {
-      id: 1,
-      depart: 'Tunis',
-      destination: 'Sousse',
-      minimum: 6,
-      planifies: 8
-    },
-    {
-      id: 2,
-      depart: 'Tunis',
-      destination: 'Sfax',
-      minimum: 4,
-      planifies: 5
-    },
-    {
-      id: 3,
-      depart: 'Tunis',
-      destination: 'Nabeul',
-      minimum: 4,
-      planifies: 6
-    },
-    {
-      id: 4,
-      depart: 'Tunis',
-      destination: 'Bizerte',
-      minimum: 5,
-      planifies: 3
-    },
-    {
-      id: 5,
-      depart: 'Sousse',
-      destination: 'Sfax',
-      minimum: 4,
-      planifies: 2
-    }
-  ];
+   private readonly http = inject(HttpClient);
+  private readonly apiUrl = 'http://localhost:8081/api';
 
-  getLignes(): Ligne[] {
-    return [...this.lignes];
+  getLignes(): Observable<Ligne[]> {
+    return this.http.get<Ligne[]>(`${this.apiUrl}/lignes`);
   }
 
-  rechercherLignes(recherche: string): Ligne[] {
-    const terme = recherche.trim().toLowerCase();
+  getStations(): Observable<Station[]> {
+    return this.http.get<Station[]>(`${this.apiUrl}/stations`);
+  }
 
-    return this.lignes.filter(ligne =>
-      ligne.depart.toLowerCase().includes(terme) ||
-      ligne.destination.toLowerCase().includes(terme)
+  ajouterLigne(request: LigneRequest): Observable<Ligne> {
+    return this.http.post<Ligne>(
+      `${this.apiUrl}/lignes`,
+      request
     );
   }
-  ajouterLigne(
-    nouvelleLigne: Omit<Ligne, 'id' | 'planifies'>
-  ): Ligne {
-    const ligne: Ligne = {
-      id: Math.max(0, ...this.lignes.map(l => l.id)) + 1,
-      depart: nouvelleLigne.depart.trim(),
-      destination: nouvelleLigne.destination.trim(),
-      minimum: nouvelleLigne.minimum,
-      planifies: 0
-    };
-
-    this.lignes.push(ligne);
-
-    return { ...ligne };
-  }
-
 }

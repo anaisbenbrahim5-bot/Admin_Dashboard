@@ -1,1 +1,251 @@
-<p>ligne-component works!</p>
+
+<div class="lignes-page">
+  <div class="page-heading">
+    <div>
+      <h1>Lignes de transport</h1>
+      <p>Gérez les lignes et leurs informations.</p>
+    </div>
+
+    <button class="btn-primary" (click)="ouvrirFormulaire()">
+      <span>＋</span> Ajouter une ligne
+    </button>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <span class="stat-label">Total des lignes</span>
+      <strong>{{ nombreLignes }}</strong>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Prix moyen</span>
+      <strong>{{ prixMoyen | number:'1.2-2' }} DT</strong>
+    </div>
+
+    <div class="stat-card">
+      <span class="stat-label">Sous le minimum</span>
+      <strong>{{ lignesSousMinimum }}</strong>
+      <small>En attente des données de planning</small>
+    </div>
+  </div>
+
+  <div class="table-card">
+    <div class="table-toolbar">
+      <h2>Liste des lignes</h2>
+
+      <input
+        type="search"
+        class="search-input"
+        placeholder="Rechercher une ligne..."
+        [(ngModel)]="recherche"
+        aria-label="Rechercher une ligne"
+      />
+    </div>
+
+    <div *ngIf="messageSucces" class="alert success">
+      {{ messageSucces }}
+    </div>
+
+    <div *ngIf="messageErreur && !afficherFormulaire"
+         class="alert error">
+      {{ messageErreur }}
+    </div>
+
+    <div *ngIf="chargement" class="empty-state">
+      Chargement des lignes...
+    </div>
+
+    <div class="table-scroll" *ngIf="!chargement">
+      <table>
+        <thead>
+          <tr>
+            <th>Départ</th>
+            <th>Arrivée</th>
+            <th>Ville destination</th>
+            <th>Délégation</th>
+            <th>Prix</th>
+            <th>Minimum louagistes</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let ligne of lignesFiltrees">
+            <td>{{ ligne.stationDepart?.nom || '—' }}</td>
+            <td>{{ ligne.stationArrivee?.nom || '—' }}</td>
+            <td>{{ ligne.villeDestination }}</td>
+            <td>{{ ligne.delegationDestination }}</td>
+            <td>{{ ligne.prix | number:'1.2-2' }} DT</td>
+            <td>
+              <span class="minimum-badge">
+                {{ ligne.minimumLouagistes }}
+              </span>
+            </td>
+          </tr>
+
+          <tr *ngIf="lignesFiltrees.length === 0">
+            <td colspan="6" class="empty-state">
+              Aucune ligne trouvée.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- Popup -->
+<div
+  class="modal-backdrop"
+  *ngIf="afficherFormulaire"
+  (click)="fermerFormulaire()"
+>
+  <section
+    class="modal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="modal-title"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-header">
+      <div>
+        <h2 id="modal-title">Ajouter une ligne</h2>
+        <p>Renseignez les informations du trajet.</p>
+      </div>
+
+      <button
+        type="button"
+        class="close-button"
+        aria-label="Fermer"
+        [disabled]="enregistrement"
+        (click)="fermerFormulaire()"
+      >
+        ×
+      </button>
+    </div>
+
+    <form (ngSubmit)="ajouterLigne()" #ligneForm="ngForm">
+      <div class="form-grid">
+        <div class="form-group">
+          <label for="stationDepart">Station de départ</label>
+
+          <select
+            id="stationDepart"
+            name="stationDepartId"
+            [(ngModel)]="nouvelleLigne.stationDepartId"
+            required
+          >
+            <option [ngValue]="0" disabled>
+              Choisir une station
+            </option>
+
+            <option
+              *ngFor="let station of stations"
+              [ngValue]="station.id"
+            >
+              {{ station.nom }} — {{ station.ville }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="stationArrivee">Station d'arrivée</label>
+
+          <select
+            id="stationArrivee"
+            name="stationArriveeId"
+            [(ngModel)]="nouvelleLigne.stationArriveeId"
+            (ngModelChange)="selectionnerDestination()"
+            required
+          >
+            <option [ngValue]="0" disabled>
+              Choisir une station
+            </option>
+
+            <option
+              *ngFor="let station of stations"
+              [ngValue]="station.id"
+            >
+              {{ station.nom }} — {{ station.ville }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="villeDestination">Ville destination</label>
+
+          <input
+            id="villeDestination"
+            name="villeDestination"
+            [(ngModel)]="nouvelleLigne.villeDestination"
+            required
+            placeholder="Ex. Sousse"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="delegationDestination">Délégation destination</label>
+
+          <input
+            id="delegationDestination"
+            name="delegationDestination"
+            [(ngModel)]="nouvelleLigne.delegationDestination"
+            required
+            placeholder="Ex. Sousse Ville"
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="prix">Prix (DT)</label>
+
+          <input
+            id="prix"
+            name="prix"
+            type="number"
+            min="0"
+            step="0.01"
+            [(ngModel)]="nouvelleLigne.prix"
+            required
+          />
+        </div>
+
+        <div class="form-group">
+          <label for="minimumLouagistes">Minimum de louagistes</label>
+
+          <input
+            id="minimumLouagistes"
+            name="minimumLouagistes"
+            type="number"
+            min="1"
+            step="1"
+            [(ngModel)]="nouvelleLigne.minimumLouagistes"
+            required
+          />
+        </div>
+      </div>
+
+      <div *ngIf="messageErreur" class="alert error">
+        {{ messageErreur }}
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          [disabled]="enregistrement"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="enregistrement || ligneForm.invalid"
+        >
+          {{ enregistrement ? 'Enregistrement...' : 'Ajouter la ligne' }}
+        </button>
+      </div>
+    </form>
+  </section>
+</div>
+
