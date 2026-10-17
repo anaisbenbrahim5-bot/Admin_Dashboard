@@ -11,7 +11,6 @@ import { LigneService } from '../../services/ligne-service';
 export class LigneComponent {
   private fb = inject(FormBuilder);
   service = inject(LigneService);
-
   showForm = signal(false);
   error = signal('');
 
@@ -19,7 +18,6 @@ export class LigneComponent {
     depart: ['', [Validators.required, Validators.minLength(2)]],
     destination: ['', [Validators.required, Validators.minLength(2)]],
   });
-
   submit() {
     if (this.form.invalid) {
       this.form.markAllAsTouched();
