@@ -1,0 +1,45 @@
+<!-- lines.component.html -->
+<header>
+  <h1>Lignes de transport</h1>
+  <button (click)="showForm.set(true)">+ Ajouter une ligne</button>
+</header>
+
+@if (showForm()) {
+  <form [formGroup]="form" (ngSubmit)="submit()">
+    <h2>Nouvelle ligne</h2>
+
+    <label>Départ
+      <input formControlName="depart" placeholder="Tunis" />
+    </label>
+    @if (form.controls.depart.touched && form.controls.depart.invalid) {
+      <small class="err">Le départ est obligatoire.</small>
+    }
+
+    <label>Destination
+      <input formControlName="destination" placeholder="Sousse" />
+    </label>
+    @if (form.controls.destination.touched && form.controls.destination.invalid) {
+      <small class="err">La destination est obligatoire.</small>
+    }
+
+    @if (error()) { <small class="err">{{ error() }}</small> }
+
+    <button type="button" (click)="showForm.set(false)">Annuler</button>
+    <button type="submit">Enregistrer</button>
+  </form>
+}
+
+<table>
+  <thead>
+    <tr><th>Départ</th><th>Destination</th><th>Actions</th></tr>
+  </thead>
+  <tbody>
+    @for (ligne of service.lignes(); track ligne.id) {
+      <tr>
+        <td>{{ ligne.depart }}</td>
+        <td>{{ ligne.destination }}</td>
+        <td><button (click)="service.remove(ligne.id)">Supprimer</button></td>
+      </tr>
+    }
+  </tbody>
+</table>

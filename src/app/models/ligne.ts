@@ -1,5 +1,5 @@
 export interface Ligne {
     id: number;
-    departure: string;
+    depart: string;
     destination: string;
 }
