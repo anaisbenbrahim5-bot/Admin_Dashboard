@@ -1,7 +1,11 @@
+import { Station } from "./station";
+
 export interface Ligne {
     id: number;
-    depart: string;
-    destination: string;
-     minimum: number;
-     planifies: number;
+    minimumLouagistes: number;
+    villeDestination: string;
+    delegationDestination: string;
+    prix: number;
+    stationDepart: Station;
+    stationArrivee: Station;
 }
