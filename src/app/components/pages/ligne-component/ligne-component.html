@@ -55,42 +55,29 @@
       Chargement des lignes...
     </div>
 
-    <div class="table-scroll" *ngIf="!chargement">
-      <table>
-        <thead>
-          <tr>
-            <th>Départ</th>
-            <th>Arrivée</th>
-            <th>Ville destination</th>
-            <th>Délégation</th>
-            <th>Prix</th>
-            <th>Minimum louagistes</th>
-          </tr>
-        </thead>
+   <div>
+ 
 
-        <tbody>
-          <tr *ngFor="let ligne of lignesFiltrees">
-            <td>{{ ligne.stationDepart?.nom || '—' }}</td>
-            <td>{{ ligne.stationArrivee?.nom || '—' }}</td>
-            <td>{{ ligne.villeDestination }}</td>
-            <td>{{ ligne.delegationDestination }}</td>
-            <td>{{ ligne.prix | number:'1.2-2' }} DT</td>
-            <td>
-              <span class="minimum-badge">
-                {{ ligne.minimumLouagistes }}
-              </span>
-            </td>
-          </tr>
 
-          <tr *ngIf="lignesFiltrees.length === 0">
-            <td colspan="6" class="empty-state">
-              Aucune ligne trouvée.
-            </td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>Départ</th>
+        <th>Arrivée</th>
+        <th>Destination</th>
+        <th>Prix</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      <tr *ngFor="let ligne of lignesFiltrees">
+        <td>{{ ligne.stationDepart.nom }}</td>
+        <td>{{ ligne.stationArrivee.nom }}</td>
+        <td>{{ ligne.villeDestination }}</td>
+        <td>{{ ligne.prix }} DT</td>
+      </tr>
+    </tbody>
+  </table>
 </div>
 
 <!-- Popup -->

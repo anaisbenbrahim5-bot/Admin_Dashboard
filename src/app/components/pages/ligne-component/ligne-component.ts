@@ -50,16 +50,20 @@ export class LigneComponent implements OnInit {
     this.chargement = true;
 
     this.ligneService.getLignes().subscribe({
-      next: (lignes) => {
-        this.lignes = lignes;
-        this.chargement = false;
-      },
-      error: (erreur) => {
-        console.error('Erreur de chargement des lignes', erreur);
-        this.messageErreur =
-          'Impossible de charger les lignes de transport.';
-        this.chargement = false;
-      }
+      next: (data) => {
+      console.log('API response:', data);
+      console.log('Is array?', Array.isArray(data));
+
+      this.lignes = data;
+      console.log('Filtered lignes:', this.lignesFiltrees);
+      console.log('Lignes stored:', this.lignes);
+
+      this.chargement = false;
+    },
+    error: (error) => {
+      console.error('Error loading lignes:', error);
+      this.chargement = false;
+    }
     });
   }
 
