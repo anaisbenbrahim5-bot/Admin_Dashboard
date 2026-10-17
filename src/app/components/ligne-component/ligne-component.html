@@ -1,45 +1,190 @@
-<!-- lines.component.html -->
-<header>
-  <h1>Lignes de transport</h1>
-  <button (click)="showForm.set(true)">+ Ajouter une ligne</button>
-</header>
 
-@if (showForm()) {
-  <form [formGroup]="form" (ngSubmit)="submit()">
-    <h2>Nouvelle ligne</h2>
+<div class="page-layout">
 
-    <label>Départ
-      <input formControlName="depart" placeholder="Tunis" />
-    </label>
-    @if (form.controls.depart.touched && form.controls.depart.invalid) {
-      <small class="err">Le départ est obligatoire.</small>
-    }
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <h2 class="logo">Admin<span>Panel</span></h2>
 
-    <label>Destination
-      <input formControlName="destination" placeholder="Sousse" />
-    </label>
-    @if (form.controls.destination.touched && form.controls.destination.invalid) {
-      <small class="err">La destination est obligatoire.</small>
-    }
+    <nav class="sidebar-nav">
+      <a routerLink="/dashboard">Dashboard</a>
+      <a routerLink="/lignes" class="active">Lignes de transport</a>
+      <a routerLink="/louagistes">Louagistes</a>
+      <a routerLink="/plannings">Plannings</a>
+    </nav>
+  </aside>
 
-    @if (error()) { <small class="err">{{ error() }}</small> }
+  <!-- MAIN CONTENT -->
+  <main class="main-content">
 
-    <button type="button" (click)="showForm.set(false)">Annuler</button>
-    <button type="submit">Enregistrer</button>
-  </form>
-}
+    <header class="page-header">
+      <div>
+        <h1>Lignes de transport</h1>
+        <p>Gérez les lignes et leurs destinations.</p>
+      </div>
 
-<table>
-  <thead>
-    <tr><th>Départ</th><th>Destination</th><th>Actions</th></tr>
-  </thead>
-  <tbody>
-    @for (ligne of service.lignes(); track ligne.id) {
-      <tr>
-        <td>{{ ligne.depart }}</td>
-        <td>{{ ligne.destination }}</td>
-       
-      </tr>
-    }
-  </tbody>
-</table>
+      <button class="btn-primary" (click)="ouvrirFormulaire()">
+        + Ajouter une ligne
+      </button>
+    </header>
+
+    <!-- DASHBOARD CARDS -->
+    <section class="stats">
+      <div class="stat-card">
+        <p>Lignes actives</p>
+        <h2>{{ lignesActives }}</h2>
+      </div>
+
+      <div class="stat-card">
+        <p>Lignes sous le minimum</p>
+        <h2>{{ lignesSousMinimum }}</h2>
+      </div>
+    </section>
+
+    <!-- SEARCH -->
+    <div class="search-container">
+      <input
+        type="text"
+        placeholder="Rechercher un départ ou une destination..."
+        [(ngModel)]="recherche"
+      />
+    </div>
+
+    <!-- TABLE -->
+    <section class="table-card">
+      <table>
+        <thead>
+          <tr>
+            <th>Départ</th>
+            <th>Destination</th>
+            <th>Minimum requis</th>
+            <th>Planifiés</th>
+          </tr>
+        </thead>
+
+        <tbody>
+          <tr *ngFor="let ligne of lignesFiltrees">
+            <td>{{ ligne.depart }}</td>
+            <td>{{ ligne.destination }}</td>
+            <td>{{ ligne.minimum }}</td>
+            <td>{{ ligne.planifies }}</td>
+          </tr>
+
+          <tr *ngIf="lignesFiltrees.length === 0">
+            <td colspan="4" class="empty-state">
+              Aucune ligne trouvée.
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+  </main>
+</div>
+
+<!-- POPUP / MODAL -->
+<div
+  class="modal-overlay"
+  *ngIf="afficherFormulaire"
+  (click)="fermerFormulaire()"
+>
+  <div
+    class="modal"
+    (click)="$event.stopPropagation()"
+  >
+    <div class="modal-header">
+      <div>
+        <h2>Ajouter une ligne</h2>
+        <p>Renseignez le départ et la destination.</p>
+      </div>
+
+      <button
+        type="button"
+        class="close-btn"
+        (click)="fermerFormulaire()"
+        aria-label="Fermer"
+      >
+        &times;
+      </button>
+    </div>
+
+    <form #formLigne="ngForm" (ngSubmit)="ajouterLigne()">
+
+      <div class="form-group">
+        <label for="depart">Ville de départ</label>
+        <input
+          id="depart"
+          type="text"
+          name="depart"
+          [(ngModel)]="nouvelleLigne.depart"
+          #depart="ngModel"
+          placeholder="Ex. Tunis"
+          required
+        />
+        <small
+          class="error"
+          *ngIf="depart.invalid && depart.touched"
+        >
+          Le départ est obligatoire.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="destination">Destination</label>
+        <input
+          id="destination"
+          type="text"
+          name="destination"
+          [(ngModel)]="nouvelleLigne.destination"
+          #destination="ngModel"
+          placeholder="Ex. Sousse"
+          required
+        />
+        <small
+          class="error"
+          *ngIf="destination.invalid && destination.touched"
+        >
+          La destination est obligatoire.
+        </small>
+      </div>
+
+      <div class="form-group">
+        <label for="minimum">Minimum de voyageurs</label>
+        <input
+          id="minimum"
+          type="number"
+          name="minimum"
+          [(ngModel)]="nouvelleLigne.minimum"
+          #minimum="ngModel"
+          min="1"
+          step="1"
+          required
+        />
+        <small
+          class="error"
+          *ngIf="minimum.invalid && minimum.touched"
+        >
+          Le minimum doit être au moins égal à 1.
+        </small>
+      </div>
+
+      <div class="modal-actions">
+        <button
+          type="button"
+          class="btn-secondary"
+          (click)="fermerFormulaire()"
+        >
+          Annuler
+        </button>
+
+        <button
+          type="submit"
+          class="btn-primary"
+          [disabled]="formLigne.invalid"
+        >
+          Ajouter
+        </button>
+      </div>
+
+    </form>
+  </div>
+</div>

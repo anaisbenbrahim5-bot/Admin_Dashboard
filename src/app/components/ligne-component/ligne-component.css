@@ -267,4 +267,24 @@ td:nth-child(2) {
     width: 100%;
     box-sizing: border-box;
   }
+  
 }
+.logo {
+    font-size: 12px;
+    overflow-wrap: anywhere;
+  }
+
+  .sidebar-nav a {
+    padding: 12px 6px;
+    font-size: 11px;
+    overflow-wrap: anywhere;
+  }
+
+  .main-content {
+    margin-left: 70px;
+    padding: 14px;
+  }
+
+  .modal {
+    padding: 20px;
+  }

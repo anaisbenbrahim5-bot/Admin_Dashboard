@@ -1,44 +1,97 @@
-import { Component, inject, signal } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import { Component, OnInit } from '@angular/core';
+import {  FormsModule,  ReactiveFormsModule, Validators } from '@angular/forms';
 import { LigneService } from '../../services/ligne-service';
+import { CommonModule } from '@angular/common';
 
 @Component({
-  imports: [ReactiveFormsModule],
+  imports: [CommonModule,FormsModule],
   selector: 'app-ligne-component',
   styleUrl: './ligne-component.css',
   templateUrl: './ligne-component.html',
 })
-export class LigneComponent {
-  private fb = inject(FormBuilder);
-  service = inject(LigneService);
-  showForm = signal(false);
-  error = signal('');
+export class LigneComponent  implements OnInit {
 
-  form = this.fb.nonNullable.group({
-    depart: ['', [Validators.required, Validators.minLength(2)]],
-    destination: ['', [Validators.required, Validators.minLength(2)]],
-  });
-  submit() {
-    if (this.form.invalid) {
-      this.form.markAllAsTouched();
+  lignes: any[] = [];
+
+  recherche = '';
+
+  afficherFormulaire = false;
+
+  nouvelleLigne = {
+    depart: '',
+    destination: '',
+    minimum: 4
+  };
+
+  constructor(
+    private ligneService: LigneService
+  ) {}
+
+  ngOnInit(): void {
+    this.chargerLignes();
+  }
+
+  chargerLignes(): void {
+    this.lignes = this.ligneService.getLignes();
+  }
+
+  get lignesActives(): number {
+    return this.lignes.length;
+  }
+
+  get lignesSousMinimum(): number {
+    return this.lignes.filter(
+      ligne => ligne.planifies < ligne.minimum
+    ).length;
+  }
+
+  get lignesFiltrees(): any[] {
+    const terme = this.recherche.trim().toLowerCase();
+
+    return this.lignes.filter(ligne =>
+      ligne.depart.toLowerCase().includes(terme) ||
+      ligne.destination.toLowerCase().includes(terme)
+    );
+  }
+
+  ouvrirFormulaire(): void {
+    this.afficherFormulaire = true;
+  }
+
+  fermerFormulaire(): void {
+    this.afficherFormulaire = false;
+  }
+
+  ajouterLigne(): void {
+    const depart = this.nouvelleLigne.depart.trim();
+    const destination = this.nouvelleLigne.destination.trim();
+    const minimum = Number(this.nouvelleLigne.minimum);
+
+
+    if (
+      !depart ||
+      !destination ||
+      depart.toLowerCase() === destination.toLowerCase() ||
+      !Number.isInteger(minimum) ||
+      minimum < 1
+    ) {
       return;
     }
-    const { depart, destination } = this.form.getRawValue();
-    const d = depart.trim();
-    const a = destination.trim();
 
-    if (d.toLowerCase() === a.toLowerCase()) {
-      this.error.set('Le départ et la destination doivent être différents.');
-      return;
-    }
-    if (this.service.exists(d, a)) {
-      this.error.set('Cette ligne existe déjà.');
-      return;
-    }
+    this.ligneService.ajouterLigne({
+      depart,
+      destination,
+      minimum
+    });
 
-    this.service.add(d, a);
-    this.form.reset();
-    this.error.set('');
-    this.showForm.set(false);
+    this.chargerLignes();
+
+    this.fermerFormulaire();
+
+    this.nouvelleLigne = {
+      depart: '',
+      destination: '',
+      minimum: 4
+    };
   }
 }
