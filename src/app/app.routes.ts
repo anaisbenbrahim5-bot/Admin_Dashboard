@@ -3,6 +3,7 @@ import { LigneComponent } from './components/pages/ligne-component/ligne-compone
 import { SidebarLayout } from './components/layouts/sidebar-layout/sidebar-layout';
 import { LouagisteComponent } from './components/pages/louagiste-component/louagiste-component';
 import { PlanningComponent } from './components/pages/planning-component/planning-component';
+import { StationComponent } from './components/pages/station-component/station-component';
 
 export const routes: Routes = [
       {
@@ -11,6 +12,7 @@ export const routes: Routes = [
     children: [
       { path: '', redirectTo: 'lignes', pathMatch: 'full' },
       { path: 'lignes', component: LigneComponent },
+      { path: 'stations', component: StationComponent },
       { path: 'louagistes', component: LouagisteComponent },
       { path: 'plannings', component: PlanningComponent }
     ]
