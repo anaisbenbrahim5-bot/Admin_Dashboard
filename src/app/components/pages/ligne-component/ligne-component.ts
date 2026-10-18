@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit ,ChangeDetectorRef } from '@angular/core';
 import { Ligne } from '../../../models/ligne';
 import { Station } from '../../../models/station';
 import { LigneRequest } from '../../../models/ligne-request';
@@ -27,7 +27,8 @@ export class LigneComponent implements OnInit {
   nouvelleLigne: LigneRequest = this.formulaireVide();
 
   constructor(
-    private ligneService: LigneService
+    private ligneService: LigneService,
+    private cdf: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -46,27 +47,29 @@ export class LigneComponent implements OnInit {
     };
   }
 
-  chargerLignes(): void {
-    this.chargement = true;
+ 
+chargerLignes(): void {
+  console.log('1. chargerLignes() called');
 
-    this.ligneService.getLignes().subscribe({
-      next: (data) => {
-      console.log('API response:', data);
-      console.log('Is array?', Array.isArray(data));
+  this.chargement = true;
+
+  this.ligneService.getLignes().subscribe({
+    next: (data) => {
+    
 
       this.lignes = data;
-      console.log('Filtered lignes:', this.lignesFiltrees);
-      console.log('Lignes stored:', this.lignes);
-
       this.chargement = false;
+      this.cdf.detectChanges();
     },
     error: (error) => {
-      console.error('Error loading lignes:', error);
+      console.error('API error:', error);
       this.chargement = false;
-    }
-    });
-  }
-
+      this.cdf.detectChanges();
+      this.messageErreur = 'Impossible de charger les lignes.';
+    },
+    
+  });
+}
   chargerStations(): void {
     this.ligneService.getStations().subscribe({
       next: (stations) => {

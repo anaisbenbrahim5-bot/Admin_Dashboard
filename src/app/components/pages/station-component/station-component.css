@@ -1,0 +1,281 @@
+
+.station-page {
+  padding: 30px;
+  background: #F5F5F5;
+  min-height: 100vh;
+  color: #212121;
+  font-family: Arial, sans-serif;
+  box-sizing: border-box;
+}
+
+.station-page * {
+  box-sizing: border-box;
+}
+
+
+.page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 25px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.page-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin: 0 0 8px;
+  color: #212121;
+}
+
+.page-header p {
+  margin: 0;
+  color: #757575;
+  font-size: 14px;
+}
+
+
+.station-card {
+  background: #FFFFFF;
+  padding: 25px;
+  border-radius: 12px;
+  box-shadow: 0 3px 12px rgba(0, 0, 0, 0.06);
+  margin-bottom: 25px;
+}
+
+.station-card h2 {
+  margin: 0 0 20px;
+  font-size: 20px;
+  color: #212121;
+}
+
+
+.station-form {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group.full-width {
+  grid-column: 1 / -1;
+}
+
+.form-group label {
+  font-size: 14px;
+  font-weight: 600;
+  color: #424242;
+}
+
+.form-group input,
+.form-group select {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid #DADDE1;
+  border-radius: 7px;
+  background: #FFFFFF;
+  color: #212121;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: #2196F3;
+  box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.12);
+}
+
+.form-group input::placeholder {
+  color: #9E9E9E;
+}
+
+.form-group select:disabled {
+  background: #F0F0F0;
+  color: #9E9E9E;
+  cursor: not-allowed;
+}
+
+.form-actions {
+  grid-column: 1 / -1;
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+  margin-top: 5px;
+}
+
+.btn {
+  border: none;
+  border-radius: 7px;
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+}
+
+.btn-primary {
+  background: #2196F3;
+  color: #FFFFFF;
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: #1976D2;
+  transform: translateY(-1px);
+}
+
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Feedback messages */
+.message {
+  padding: 12px 15px;
+  border-radius: 7px;
+  margin-bottom: 18px;
+  font-size: 14px;
+}
+
+.message-success {
+  color: #2E7D32;
+  background: #E8F5E9;
+  border: 1px solid #C8E6C9;
+}
+
+.message-error {
+  color: #C62828;
+  background: #FFEBEE;
+  border: 1px solid #FFCDD2;
+}
+
+
+.table-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.table-header h2 {
+  margin: 0;
+}
+
+.station-count {
+  color: #757575;
+  font-size: 13px;
+  background: #F5F5F5;
+  padding: 7px 12px;
+  border-radius: 20px;
+}
+
+
+.table-wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.station-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.station-table thead {
+  background: #F5F7FA;
+}
+
+.station-table th {
+  padding: 15px;
+  color: #616161;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  font-weight: 700;
+  border-bottom: 1px solid #E5E7EB;
+  white-space: nowrap;
+}
+
+.station-table td {
+  padding: 15px;
+  font-size: 14px;
+  color: #424242;
+  border-bottom: 1px solid #EEEEEE;
+}
+
+.station-table tbody tr:hover {
+  background: #F8FBFF;
+}
+
+.station-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.station-name {
+  font-weight: 600;
+  color: #212121;
+}
+
+.station-id {
+  display: inline-block;
+  padding: 5px 9px;
+  background: #E3F2FD;
+  color: #1565C0;
+  border-radius: 5px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 35px 15px;
+  color: #757575;
+  font-size: 14px;
+}
+
+.loading-state {
+  text-align: center;
+  padding: 25px;
+  color: #757575;
+}
+
+/* Responsive layout */
+@media (max-width: 768px) {
+  .station-page {
+    padding: 18px;
+  }
+
+  .station-card {
+    padding: 18px;
+  }
+
+  .station-form {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+
+  .form-group.full-width,
+  .form-actions {
+    grid-column: auto;
+  }
+
+  .form-actions {
+    flex-direction: column;
+  }
+
+  .form-actions .btn {
+    width: 100%;
+  }
+
+  .page-header h1 {
+    font-size: 24px;
+  }
+}

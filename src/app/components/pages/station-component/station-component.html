@@ -1,1 +1,202 @@
-<p>station-component works!</p>
+<div class="station-page">
+
+  <header class="page-header">
+    <div>
+      <h1>Gestion des stations</h1>
+      <p>Ajoutez et consultez les stations de transport.</p>
+    </div>
+  </header>
+
+ 
+  <div
+    *ngIf="messageSucces"
+    class="message message-success"
+    role="status"
+  >
+    {{ messageSucces }}
+  </div>
+
+  
+  <div
+    *ngIf="messageErreur"
+    class="message message-error"
+    role="alert"
+  >
+    {{ messageErreur }}
+  </div>
+
+  
+  <section class="station-card">
+    <h2>Ajouter une station</h2>
+
+    <form
+      class="station-form"
+      #stationForm="ngForm"
+      (ngSubmit)="ajouterStation()"
+    >
+
+      <div class="form-group full-width">
+        <label for="nom">Nom de la station</label>
+        <input
+          id="nom"
+          name="nom"
+          type="text"
+          [(ngModel)]="nom"
+          placeholder="Ex. : Station Sousse"
+          required
+          maxlength="100"
+          #nomInput="ngModel"
+        />
+
+        <small
+          *ngIf="nomInput.invalid && nomInput.touched"
+          class="field-error"
+        >
+          Veuillez saisir le nom de la station.
+        </small>
+      </div>
+
+     
+      <div class="form-group">
+        <label for="ville">Ville</label>
+
+        <select
+          id="ville"
+          name="ville"
+          [(ngModel)]="ville"
+          (ngModelChange)="changerVille()"
+          required
+          #villeInput="ngModel"
+        >
+          <option value="">Sélectionner une ville</option>
+
+          <option
+            *ngFor="let loc of localisations"
+            [value]="loc.ville"
+          >
+            {{ loc.ville.replace('_', ' ') }}
+          </option>
+        </select>
+
+        <small
+          *ngIf="villeInput.invalid && villeInput.touched"
+          class="field-error"
+        >
+          Veuillez sélectionner une ville.
+        </small>
+      </div>
+
+   
+      <div class="form-group">
+        <label for="delegation">Délégation</label>
+
+        <select
+          id="delegation"
+          name="delegation"
+          [(ngModel)]="delegation"
+          [disabled]="!ville"
+          required
+          #delegationInput="ngModel"
+        >
+          <option value="">Sélectionner une délégation</option>
+
+          <option
+            *ngFor="let del of delegationsDisponibles"
+            [value]="del"
+          >
+            {{ del }}
+          </option>
+        </select>
+
+        <small
+          *ngIf="delegationInput.invalid && delegationInput.touched"
+          class="field-error"
+        >
+          Veuillez sélectionner une délégation.
+        </small>
+      </div>
+
+    
+      <div class="form-actions">
+        <button
+          class="btn btn-primary"
+          type="submit"
+          [disabled]="enregistrement || stationForm.invalid"
+        >
+          {{
+            enregistrement
+              ? 'Enregistrement...'
+              : 'Ajouter la station'
+          }}
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+
+  <section class="station-card">
+
+    <div class="table-header">
+      <h2>Liste des stations</h2>
+
+      <span class="station-count">
+        {{ stations.length }}
+        station(s)
+      </span>
+    </div>
+
+  
+    <div *ngIf="chargement" class="loading-state">
+      Chargement des stations...
+    </div>
+
+    
+    <div class="table-wrapper" *ngIf="!chargement">
+      <table class="station-table">
+
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Nom de la station</th>
+            <th>Ville</th>
+            <th>Délégation</th>
+          </tr>
+        </thead>
+
+        <tbody>
+
+          <tr *ngFor="let station of stations">
+            <td>
+              <span class="station-id">
+                {{ station.id }}
+              </span>
+            </td>
+
+            <td class="station-name">
+              {{ station.nom }}
+            </td>
+
+            <td>
+              {{ station.ville }}
+            </td>
+
+            <td>
+              {{ station.delegation }}
+            </td>
+          </tr>
+
+          
+          <tr *ngIf="stations.length === 0">
+            <td colspan="4" class="empty-state">
+              Aucune station enregistrée.
+            </td>
+          </tr>
+
+        </tbody>
+      </table>
+    </div>
+
+  </section>
+
+</div>
