@@ -169,72 +169,38 @@ chargerLignes(): void {
     }
   }
 
-  ajouterLigne(): void {
-    this.messageErreur = '';
-    this.messageSucces = '';
+ajouterLigne(): void {
+  this.messageErreur = '';
+  this.messageSucces = '';
 
-    const departId = Number(this.nouvelleLigne.stationDepartId);
-    const arriveeId = Number(this.nouvelleLigne.stationArriveeId);
-    const prix = Number(this.nouvelleLigne.prix);
-    const minimum = Number(this.nouvelleLigne.minimumLouagistes);
+  this.enregistrement = true;
 
-    if (!departId || !arriveeId) {
-      this.messageErreur = 'Veuillez choisir les deux stations.';
-      return;
-    }
+  this.ligneService.ajouterLigne(this.nouvelleLigne).subscribe({
+    next: (ligneAjoutee) => {
+      this.lignes = [...this.lignes, ligneAjoutee];
+      this.nouvelleLigne = this.formulaireVide();
 
-    if (departId === arriveeId) {
+
+      this.enregistrement = false;
+
+      this.messageSucces = 'Ligne ajoutée avec succès.';
+
+      this.afficherFormulaire = false;
+      this.cdf.detectChanges();
+    },
+
+    error: (error) => {
+      console.error('Erreur lors de l’ajout de la ligne :', error);
+
+      this.enregistrement = false;
       this.messageErreur =
-        'La station de départ et celle d’arrivée doivent être différentes.';
-      return;
+        error?.error?.message ?? 'Impossible d’ajouter la ligne.';
+      this.cdf.detectChanges();
+    },
+
+    complete: () => {
+      console.log('Requête d’ajout terminée.');
     }
-
-    if (!Number.isFinite(prix) || prix < 0) {
-      this.messageErreur = 'Veuillez saisir un prix valide.';
-      return;
-    }
-
-    if (!Number.isInteger(minimum) || minimum < 1) {
-      this.messageErreur =
-        'Le minimum de louagistes doit être un entier supérieur à zéro.';
-      return;
-    }
-
-    if (
-      !this.nouvelleLigne.villeDestination.trim() ||
-      !this.nouvelleLigne.delegationDestination.trim()
-    ) {
-      this.messageErreur = 'Veuillez préciser la destination.';
-      return;
-    }
-
-    const request: LigneRequest = {
-      stationDepartId: departId,
-      stationArriveeId: arriveeId,
-      villeDestination: this.nouvelleLigne.villeDestination.trim(),
-      delegationDestination:
-        this.nouvelleLigne.delegationDestination.trim(),
-      prix,
-      minimumLouagistes: minimum
-    };
-
-    this.enregistrement = true;
-
-    this.ligneService.ajouterLigne(request).subscribe({
-      next: (ligne) => {
-        this.lignes = [...this.lignes, ligne];
-        this.enregistrement = false;
-        this.afficherFormulaire = false;
-        this.messageSucces = 'La ligne a été ajoutée avec succès.';
-        this.nouvelleLigne = this.formulaireVide();
-      },
-      error: (erreur) => {
-        console.error('Erreur lors de l’ajout de la ligne', erreur);
-        this.enregistrement = false;
-        this.messageErreur =
-          erreur?.error?.message ??
-          'Impossible d’ajouter la ligne. Vérifiez le serveur et les données.';
-      }
-    });
-  }
+  });
+}
 }

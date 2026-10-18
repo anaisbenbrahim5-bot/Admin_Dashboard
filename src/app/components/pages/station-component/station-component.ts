@@ -35,15 +35,19 @@ export class StationComponent implements OnInit {
   }
 
   get delegationsDisponibles(): string[] {
-    return this.localisations.find(
-      loc => loc.ville === this.ville
-    )?.delegation ?? [];
+    const localisation = this.localisations.find(
+    loc => loc.ville === this.ville
+  );
+
+  return localisation?.delegations ?? [];
   }
 
   chargerLocalisations(): void {
     this.stationService.getLocalisations().subscribe({
       next: data => {
         this.localisations = data;
+        console.log('API localisations:', data);
+        console.log('First localisation:', data[0]);
       },
       error: error => {
         console.error('Erreur localisations:', error);
